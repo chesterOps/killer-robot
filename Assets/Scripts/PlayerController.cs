@@ -1,22 +1,19 @@
 using UnityEngine;
 
 [RequireComponent(typeof(CharacterController))]
-public class PlayerMovement : MonoBehaviour
+[RequireComponent(typeof(PlayerInputController))]
+public class PlayerController : MonoBehaviour
 {
     private Vector3 _newMovement;
+    private PlayerInputController _playerInputController;
     private CharacterController _characterController;
     [SerializeField] float _movementSpeed;
     [SerializeField] float _rotationSpeed;
 
     void Awake()
     {
+        _playerInputController = GetComponent<PlayerInputController>();
         _characterController = GetComponent<CharacterController>();
-    }
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-
     }
 
     // Update is called once per frame
@@ -28,12 +25,8 @@ public class PlayerMovement : MonoBehaviour
 
     void MovePlayer()
     {
-        float horizontalInput = Input.GetAxis("Horizontal");
-        float verticalInput = Input.GetAxis("Vertical");
-        _newMovement = new(horizontalInput, 0, verticalInput);
-        float magnitude = Mathf.Clamp01(_newMovement.magnitude) * _movementSpeed;
-        _newMovement.Normalize();
-        _characterController.SimpleMove(_newMovement * magnitude);
+        _newMovement = _playerInputController.MovementDirectionVector;
+        _characterController.SimpleMove(_newMovement * _movementSpeed);
 
     }
 
