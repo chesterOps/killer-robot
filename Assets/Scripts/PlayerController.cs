@@ -7,13 +7,17 @@ public class PlayerController : MonoBehaviour
     private Vector3 _newMovement;
     private PlayerInputController _playerInputController;
     private CharacterController _characterController;
+    private bool _isJumpTriggered = false;
+    private float _ySpeed;
     [SerializeField] float _movementSpeed;
     [SerializeField] float _rotationSpeed;
+    [SerializeField] float _jumpSpeed;
 
     void Awake()
     {
         _playerInputController = GetComponent<PlayerInputController>();
         _characterController = GetComponent<CharacterController>();
+        _playerInputController.OnJumpButtonPressed += JumpPressed;
     }
 
     // Update is called once per frame
@@ -25,17 +29,32 @@ public class PlayerController : MonoBehaviour
 
     void MovePlayer()
     {
-        _newMovement = _playerInputController.MovementDirectionVector;
-        _characterController.SimpleMove(_newMovement * _movementSpeed);
-
+        _newMovement = _playerInputController.MovementDirectionVector * _movementSpeed;
+        _ySpeed += Physics.gravity.y * Time.deltaTime;
+        if (_isJumpTriggered == true)
+        {
+            _ySpeed = _jumpSpeed;
+            _isJumpTriggered = false;
+        }
+        _newMovement.y = _ySpeed;
+        _characterController.Move(_newMovement * Time.deltaTime);
     }
 
     void RotatePlayer()
     {
-        if (_newMovement != Vector3.zero)
+        Vector3 horizontalMovement = new(_newMovement.x, 0, _newMovement.z);
+        if (horizontalMovement != Vector3.zero)
         {
-            Quaternion toRotation = Quaternion.LookRotation(_newMovement, Vector3.up);
+            Quaternion toRotation = Quaternion.LookRotation(horizontalMovement, Vector3.up);
             transform.rotation = Quaternion.RotateTowards(transform.rotation, toRotation, _rotationSpeed * Time.deltaTime);
+        }
+    }
+
+    void JumpPressed()
+    {
+        if (_characterController.isGrounded)
+        {
+            _isJumpTriggered = true;
         }
     }
 }
