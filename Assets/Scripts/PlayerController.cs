@@ -10,6 +10,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float _movementSpeed;
     [SerializeField] float _rotationSpeed;
 
+
     void Awake()
     {
         _playerInputController = GetComponent<PlayerInputController>();
