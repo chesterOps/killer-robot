@@ -15,6 +15,7 @@ public class Bullet : MonoBehaviour
     {
         gameObject.SetActive(false);
         collision.gameObject.SetActive(false);
+
     }
 
     IEnumerator DestroyCoroutine()
