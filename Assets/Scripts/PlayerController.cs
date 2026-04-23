@@ -20,6 +20,7 @@ public class PlayerController : MonoBehaviour
         _playerInputController = GetComponent<PlayerInputController>();
         _characterController = GetComponent<CharacterController>();
         _playerInputController.OnJumpButtonPressed += JumpPressed;
+        _playerInputController.OnJumpButtonPressed += JumpPressed;
     }
 
     // Update is called once per frame
@@ -50,15 +51,35 @@ public class PlayerController : MonoBehaviour
         }
         _newMovement.y = _ySpeed;
         _characterController.Move(_newMovement * Time.deltaTime);
+        _newMovement = _playerInputController.MovementDirectionVector * _movementSpeed;
+        _ySpeed += Physics.gravity.y * Time.deltaTime;
+        if (_isJumpTriggered == true)
+        {
+            _ySpeed = _jumpSpeed;
+            _isJumpTriggered = false;
+        }
+        _newMovement.y = _ySpeed;
+        _characterController.Move(_newMovement * Time.deltaTime);
     }
 
     void RotatePlayer()
     {
         Vector3 horizontalMovement = new(_newMovement.x, 0, _newMovement.z);
         if (horizontalMovement != Vector3.zero)
+            Vector3 horizontalMovement = new(_newMovement.x, 0, _newMovement.z);
+        if (horizontalMovement != Vector3.zero)
         {
             Quaternion toRotation = Quaternion.LookRotation(horizontalMovement, Vector3.up);
+            Quaternion toRotation = Quaternion.LookRotation(horizontalMovement, Vector3.up);
             transform.rotation = Quaternion.RotateTowards(transform.rotation, toRotation, _rotationSpeed * Time.deltaTime);
+        }
+    }
+
+    void JumpPressed()
+    {
+        if (_characterController.isGrounded)
+        {
+            _isJumpTriggered = true;
         }
     }
 
