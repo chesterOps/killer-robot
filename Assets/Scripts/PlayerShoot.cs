@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class PlayerShoot : MonoBehaviour
 {
-    [SerializeField] GameObject _bulletPrefab;
-    [SerializeField] float _bulletSpeed;
+
+    [SerializeField] float _bulletSpeed = 20f;
     private PlayerInputController _playerInputController;
 
     void Awake()
@@ -15,10 +15,12 @@ public class PlayerShoot : MonoBehaviour
 
     private void Shoot()
     {
-        GameObject bullet = Instantiate(_bulletPrefab, transform.position, transform.rotation);
+        GameObject bullet = ObjectPool.instance.GetBullet();
         if (bullet.TryGetComponent<Rigidbody>(out var bulletRigidbody))
         {
-            bulletRigidbody.linearVelocity = -transform.up * _bulletSpeed;
+            bullet.transform.SetPositionAndRotation(transform.position, transform.rotation);
+            bullet.SetActive(true);
+            bulletRigidbody.linearVelocity = transform.forward * _bulletSpeed;
         }
     }
 }

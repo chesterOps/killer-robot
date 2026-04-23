@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class Bullet : MonoBehaviour
@@ -6,11 +7,22 @@ public class Bullet : MonoBehaviour
 
     void Start()
     {
-        Destroy(gameObject, _lifetime);
+
+        StartCoroutine(DestroyCoroutine());
     }
 
     void OnCollisionEnter(Collision collision)
     {
-        Destroy(gameObject);
+        gameObject.SetActive(false);
+        collision.gameObject.SetActive(false);
+    }
+
+    IEnumerator DestroyCoroutine()
+    {
+        yield return new WaitForSeconds(_lifetime);
+        if (gameObject.activeInHierarchy)
+        {
+            gameObject.SetActive(false);
+        }
     }
 }
