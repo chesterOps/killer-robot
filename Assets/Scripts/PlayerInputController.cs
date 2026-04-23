@@ -6,6 +6,7 @@ public class PlayerInputController : MonoBehaviour
 {
     public Vector3 MovementDirectionVector { get; private set; }
     public event Action OnJumpButtonPressed;
+    public event Action OnAttackButtonPressed;
 
     void OnMove(InputValue inputValue)
     {
@@ -18,6 +19,14 @@ public class PlayerInputController : MonoBehaviour
         if (inputvalue.isPressed)
         {
             OnJumpButtonPressed?.Invoke();
+        }
+    }
+
+    void OnAttack(InputValue inputvalue)
+    {
+        if (inputvalue.isPressed)
+        {
+            OnAttackButtonPressed?.Invoke();
         }
     }
 }

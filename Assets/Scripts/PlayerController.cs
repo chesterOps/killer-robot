@@ -9,9 +9,11 @@ public class PlayerController : MonoBehaviour
     private CharacterController _characterController;
     private bool _isJumpTriggered = false;
     private float _ySpeed;
+    [SerializeField] GameObject _legs;
     [SerializeField] float _movementSpeed;
     [SerializeField] float _rotationSpeed;
     [SerializeField] float _jumpSpeed;
+
 
     void Awake()
     {
@@ -25,10 +27,29 @@ public class PlayerController : MonoBehaviour
     {
         MovePlayer();
         RotatePlayer();
+        RotateLegs();
     }
+
+    void RotateLegs()
+    {
+        if (_playerInputController.MovementDirectionVector != Vector3.zero)
+        {
+            _legs.transform.Rotate(_rotationSpeed * Time.deltaTime * Vector3.right, Space.Self);
+        }
+    }
+
 
     void MovePlayer()
     {
+        _newMovement = _playerInputController.MovementDirectionVector * _movementSpeed;
+        _ySpeed += Physics.gravity.y * Time.deltaTime;
+        if (_isJumpTriggered == true)
+        {
+            _ySpeed = _jumpSpeed;
+            _isJumpTriggered = false;
+        }
+        _newMovement.y = _ySpeed;
+        _characterController.Move(_newMovement * Time.deltaTime);
         _newMovement = _playerInputController.MovementDirectionVector * _movementSpeed;
         _ySpeed += Physics.gravity.y * Time.deltaTime;
         if (_isJumpTriggered == true)
@@ -57,4 +78,6 @@ public class PlayerController : MonoBehaviour
             _isJumpTriggered = true;
         }
     }
+
+
 }
