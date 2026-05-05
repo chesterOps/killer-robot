@@ -1,29 +1,40 @@
 using System.Collections;
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody))]
 public class Bullet : MonoBehaviour
 {
-    [SerializeField] float _lifetime = 5f;
+    [SerializeField] float _damageAmount = 20, _bulletSpeed = 35f, _lifetime = 5f;
+    private Rigidbody _rigidBody;
 
-    void Start()
+    void Awake()
     {
-
-        StartCoroutine(DestroyCoroutine());
+        _rigidBody = GetComponent<Rigidbody>();
     }
 
-    void OnCollisionEnter(Collision collision)
+
+    void FixedUpdate()
+    {
+        _rigidBody.linearVelocity = transform.forward * _bulletSpeed;
+    }
+
+    void OnTriggerEnter(Collider other)
     {
         gameObject.SetActive(false);
-        collision.gameObject.SetActive(false);
+        if (other.gameObject.TryGetComponent<HealthController>(out var healthController))
+        {
+            healthController.TakeDamage(_damageAmount);
+        }
+    }
 
+    public void DestroyBulletRoutine()
+    {
+        StartCoroutine(DestroyCoroutine());
     }
 
     IEnumerator DestroyCoroutine()
     {
         yield return new WaitForSeconds(_lifetime);
-        if (gameObject.activeInHierarchy)
-        {
-            gameObject.SetActive(false);
-        }
+        gameObject.SetActive(false);
     }
 }

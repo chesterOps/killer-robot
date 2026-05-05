@@ -5,8 +5,10 @@ public class ObjectPool : MonoBehaviour
 {
     public static ObjectPool instance;
     private List<GameObject> _bullets = new();
-    [SerializeField] private int bulletCount = 20;
-    [SerializeField] private GameObject _bullet;
+    private List<GameObject> _coins = new();
+    private List<GameObject> _explosions = new();
+    [SerializeField] private int _coinCount = 10, _bulletCount = 10, _explosionCount = 4;
+    [SerializeField] private GameObject _bulletPrefab, _coinPrefab, _explosionPrefab;
 
     void Awake()
     {
@@ -15,39 +17,68 @@ public class ObjectPool : MonoBehaviour
         {
             instance = this;
         }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 
     void Start()
     {
-        // Pre-instantiate bullets and add them to the pool
-        for (int i = 0; i < bulletCount; i++)
+        // Pre-instantiate bullets
+        for (int i = 0; i < _bulletCount; i++)
         {
-            CreateBullet();
+            CreateObject(_bulletPrefab, _bullets);
+        }
+        // Pre-instantiate coins
+        for (int i = 0; i < _coinCount; i++)
+        {
+            CreateObject(_coinPrefab, _coins);
+        }
+        // Pre-instantiate _explosions
+        for (int i = 0; i < _explosionCount; i++)
+        {
+            CreateObject(_explosionPrefab, _explosions);
         }
     }
 
-    GameObject CreateBullet()
+    private GameObject CreateObject(GameObject prefab, List<GameObject> container)
     {
-        GameObject obj = Instantiate(_bullet);
+        GameObject obj = Instantiate(prefab);
         obj.transform.parent = transform;
         obj.SetActive(false);
-        _bullets.Add(obj);
+        container.Add(obj);
         return obj;
     }
+
+    private GameObject GetObject(GameObject prefab, List<GameObject> container)
+    {
+        for (int i = 0; i < container.Count; i++)
+        {
+            if (!container[i].activeInHierarchy)
+            {
+                return container[i];
+            }
+        }
+        return CreateObject(prefab, container);
+    }
+
 
 
     public GameObject GetBullet()
     {
-        // Retrieve an inactive bullet from the pool
-        for (int i = 0; i < _bullets.Count; i++)
-        {
-            if (!_bullets[i].activeInHierarchy)
-            {
-                return _bullets[i];
-            }
-        }
-
-        GameObject newBullet = CreateBullet();
-        return newBullet; // If no inactive bullets are available, instantiate a new one
+        return GetObject(_bulletPrefab, _bullets);
     }
+
+    public GameObject GetCoin()
+    {
+        return GetObject(_coinPrefab, _coins);
+    }
+
+    public GameObject GetExplosion()
+    {
+        return GetObject(_explosionPrefab, _explosions);
+    }
+
+
 }

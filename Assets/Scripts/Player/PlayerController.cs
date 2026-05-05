@@ -25,9 +25,11 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
+        RotateLegs();
         MovePlayer();
         RotatePlayer();
-        RotateLegs();
+
     }
 
     void RotateLegs()
@@ -41,15 +43,6 @@ public class PlayerController : MonoBehaviour
 
     void MovePlayer()
     {
-        _newMovement = _playerInputController.MovementDirectionVector * _movementSpeed;
-        _ySpeed += Physics.gravity.y * Time.deltaTime;
-        if (_isJumpTriggered == true)
-        {
-            _ySpeed = _jumpSpeed;
-            _isJumpTriggered = false;
-        }
-        _newMovement.y = _ySpeed;
-        _characterController.Move(_newMovement * Time.deltaTime);
         _newMovement = _playerInputController.MovementDirectionVector * _movementSpeed;
         _ySpeed += Physics.gravity.y * Time.deltaTime;
         if (_isJumpTriggered == true)

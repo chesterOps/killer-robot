@@ -4,7 +4,8 @@ public class EnemyAwareness : MonoBehaviour
 {
     public bool AwareOfPlayer { get; private set; }
     public Vector3 DirectionToPlayer { get; private set; }
-    [SerializeField] float _playerAwarenessDistance;
+    [SerializeField] private float _playerAwarenessDistance;
+
 
     private Transform _player;
     void Awake()
@@ -16,8 +17,7 @@ public class EnemyAwareness : MonoBehaviour
     void FixedUpdate()
     {
         Vector3 enemyToPlayerVector = _player.position - transform.position;
-        enemyToPlayerVector.y = 0f;
-        DirectionToPlayer = enemyToPlayerVector.normalized;
-        AwareOfPlayer = enemyToPlayerVector.magnitude <= _playerAwarenessDistance;
+        DirectionToPlayer = new Vector3(enemyToPlayerVector.normalized.x, 0, enemyToPlayerVector.normalized.z);
+        AwareOfPlayer = enemyToPlayerVector.magnitude <= _playerAwarenessDistance && _player.gameObject.activeInHierarchy;
     }
 }
