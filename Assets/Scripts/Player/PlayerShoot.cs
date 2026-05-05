@@ -1,10 +1,7 @@
-using UnityEngine;
 
 
-public class PlayerShoot : MonoBehaviour
+public class PlayerShoot : Shoot
 {
-
-    [SerializeField] float _bulletSpeed = 20f;
     private PlayerInputController _playerInputController;
 
     void Awake()
@@ -13,14 +10,9 @@ public class PlayerShoot : MonoBehaviour
         _playerInputController.OnAttackButtonPressed += Shoot;
     }
 
-    private void Shoot()
+    void Shoot()
     {
-        GameObject bullet = ObjectPool.instance.GetBullet();
-        if (bullet.TryGetComponent<Rigidbody>(out var bulletRigidbody))
-        {
-            bullet.transform.SetPositionAndRotation(transform.position, transform.rotation);
-            bullet.SetActive(true);
-            bulletRigidbody.linearVelocity = transform.forward * _bulletSpeed;
-        }
+        FireBullet(transform);
     }
+
 }
