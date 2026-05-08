@@ -13,8 +13,6 @@ public class EnemyMovement : MonoBehaviour
     private bool _isGrounded;
     private float _groundCheckDistance;
     private float _bufferCheckDistance = 0.1f;
-    [SerializeField]
-    private bool _isStationary = false;
 
     private EnemyAwareness _enemyAwareness;
     private Vector3 _targetDirection;
@@ -61,7 +59,6 @@ public class EnemyMovement : MonoBehaviour
 
     private void UpdateTargetDirection()
     {
-        if (_isStationary) _targetDirection = transform.position;
         if (_enemyAwareness.AwareOfPlayer)
             _targetDirection = _enemyAwareness.DirectionToPlayer;
         else
@@ -95,7 +92,7 @@ public class EnemyMovement : MonoBehaviour
 
     private void SetVelocity()
     {
-        if (_enemyAwareness.AwareOfPlayer || _isStationary)
+        if (_enemyAwareness.AwareOfPlayer)
         {
             _rigidBody.linearVelocity = Vector3.zero;
             return;
