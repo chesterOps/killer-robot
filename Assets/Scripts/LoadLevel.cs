@@ -1,13 +1,18 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class LoadLevel : MonoBehaviour
 {
+    private LevelManager _levelManager;
+
+    void Awake()
+    {
+        _levelManager = FindAnyObjectByType<LevelManager>();
+    }
     void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.TryGetComponent<PlayerController>(out var _player))
+        if (other.gameObject.TryGetComponent<PlayerController>(out var _player) && _levelManager != null)
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+            _levelManager.LoadScene();
         }
     }
 }
