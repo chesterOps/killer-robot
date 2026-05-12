@@ -15,21 +15,20 @@ public class EnemyMovement : MonoBehaviour
     private float _bufferCheckDistance = 0.1f;
 
     private EnemyAwareness _enemyAwareness;
-    private Vector3 _targetDirection;
+    public Vector3 _targetDirection;
+    private float DirectionEpsilon = 0.001f;
+
     void Awake()
     {
         _rigidBody = GetComponent<Rigidbody>();
         _capsuleCollider = GetComponent<CapsuleCollider>();
         _enemyAwareness = GetComponent<EnemyAwareness>();
         if (_patrolPoints.Length > 0)
-        {
-            _targetDirection = _patrolPoints[_targetPatrolPoint];
-        }
-        else
-        {
-            _targetDirection = transform.position;
-        }
+            _targetDirection = CalculateTargetDirection(_patrolPoints[_targetPatrolPoint]);
+
     }
+
+
 
 
 
@@ -42,6 +41,12 @@ public class EnemyMovement : MonoBehaviour
             RotateTowardsTarget();
             SetVelocity();
         }
+    }
+
+    private Vector3 CalculateTargetDirection(Vector3 destination)
+    {
+        Vector3 relPos = destination - transform.position;
+        return _targetDirection = new Vector3(relPos.x, 0, relPos.z).normalized;
     }
 
     private void SetIsGrounded()
@@ -60,7 +65,10 @@ public class EnemyMovement : MonoBehaviour
     private void UpdateTargetDirection()
     {
         if (_enemyAwareness.AwareOfPlayer)
+        {
+
             _targetDirection = _enemyAwareness.DirectionToPlayer;
+        }
         else
         {
             HandlePatrolDirection();
@@ -69,23 +77,41 @@ public class EnemyMovement : MonoBehaviour
 
     private void HandlePatrolDirection()
     {
-        if (_patrolPoints.Length == 0) return;
+        if (_patrolPoints.Length == 0)
+        {
 
-        if (transform.position == _patrolPoints[_targetPatrolPoint])
+            return;
+        }
+        Vector3 point = _patrolPoints[_targetPatrolPoint];
+        Vector3 toPoint = point - transform.position;
+        toPoint.y = 0;
+
+        if (toPoint.sqrMagnitude <= 0.01f)
         {
             _targetPatrolPoint++;
             if (_targetPatrolPoint >= _patrolPoints.Length)
             {
                 _targetPatrolPoint = 0;
             }
+            point = _patrolPoints[_targetPatrolPoint];
+            toPoint = point - transform.position;
+            toPoint.y = 0;
         }
-        _targetDirection = _patrolPoints[_targetPatrolPoint];
+
+        _targetDirection = toPoint.normalized;
     }
 
 
     private void RotateTowardsTarget()
     {
+        if (_targetDirection.sqrMagnitude <= DirectionEpsilon)
+        {
+
+            return;
+        }
         Quaternion targetRotation = Quaternion.LookRotation(_targetDirection, Vector3.up);
+
+
         Quaternion rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, _rotationSpeed * Time.deltaTime);
         _rigidBody.MoveRotation(rotation);
     }
@@ -97,6 +123,9 @@ public class EnemyMovement : MonoBehaviour
             _rigidBody.linearVelocity = Vector3.zero;
             return;
         }
-        if (transform.position != _targetDirection) _rigidBody.linearVelocity = transform.forward * _speed;
+        if (_targetDirection.sqrMagnitude > DirectionEpsilon)
+        {
+            _rigidBody.linearVelocity = transform.forward * _speed;
+        }
     }
 }
